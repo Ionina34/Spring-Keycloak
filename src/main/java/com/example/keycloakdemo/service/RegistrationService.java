@@ -71,21 +71,20 @@ public class RegistrationService {
         return role.equals("USER") || role.equals("ADMIN") || role.equals("MODERATOR");
     }
 
-    private String saveUserInKeycloak(UserRepresentation user){
-        Response response = keycloak.realm(realm)
-                .users()
-                .create(user);
-
-        if (response.getStatus() != 201) {
-            String errorMessage = "Failed to create user.";
-            if (response.hasEntity()) {
-                String message = getErrorMessageFromResponse(response);
-                errorMessage += " " + message;
+    private String saveUserInKeycloak(UserRepresentation user) {
+        try (Response response = keycloak.realm(realm).users().create(user)) {
+            if (response.getStatus() != 201) {
+                String errorMessage = "Failed to create user.";
+                if (response.hasEntity()) {
+                    String message = getErrorMessageFromResponse(response);
+                    errorMessage += " Details: " + message;
+                }
+                throw new FailedCreateUserException(errorMessage);
             }
-            throw new FailedCreateUserException(errorMessage);
+            return CreatedResponseUtil.getCreatedId(response);
+        } catch (Exception e) {
+            throw new FailedCreateUserException("Failed to create user due to an unexpected error: "+e.getMessage());
         }
-
-        return CreatedResponseUtil.getCreatedId(response);
     }
 
     private String getErrorMessageFromResponse(Response response) {

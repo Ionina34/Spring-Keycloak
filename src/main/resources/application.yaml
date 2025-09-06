@@ -1,11 +1,12 @@
 server:
   port: 8081
 keycloak:
-  auth-server-url: http://localhost:8080
+  auth-server-url: http://keycloak:8080
   realm: "spring_keycloak"
   admin-username: admin
   admin-password: admin
   admin-client-id: admin-clid
+  admin-client-secret: pdKZHqeUHRRAJm92rQX8qovN7OX1JCUB
 spring:
   security:
     oauth2:

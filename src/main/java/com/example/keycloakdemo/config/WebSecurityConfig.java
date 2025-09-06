@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
                 );
+
         return http.build();
     }
 
@@ -64,15 +65,21 @@ public class WebSecurityConfig {
     public Keycloak keycloakAdmin(
             @Value("${keycloak.auth-server-url}") String url,
             @Value("${keycloak.admin-username}") String adminUsername,
+            @Value("${keycloak.realm}") String realm,
             @Value("${keycloak.admin-password}") String adminPassword,
-            @Value("${keycloak.admin-client-id}") String adminClientId) {
-        return KeycloakBuilder.builder()
+            @Value("${keycloak.admin-client-id}") String adminClientId,
+            @Value("${keycloak.admin-client-secret}") String adminClientSecret) {
+        KeycloakBuilder builder = KeycloakBuilder.builder()
                 .serverUrl(url)
-                .realm("master")
+                .realm(realm)
                 .username(adminUsername)
                 .password(adminPassword)
                 .clientId(adminClientId)
-                .grantType(OAuth2Constants.PASSWORD)
-                .build();
+                .grantType(OAuth2Constants.PASSWORD);
+
+        if (!adminClientSecret.isEmpty()) {
+            builder.clientSecret(adminClientSecret);
+        }
+        return builder.build();
     }
 }
