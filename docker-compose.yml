@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  security:
+    driver: bridge
+
 services:
   keycloak:
     image: keycloak/keycloak:21.1.0
@@ -10,6 +14,8 @@ services:
     command: start-dev
     ports:
       - "8080:8080"
+    networks:
+      - security
 
   spring-app:
     build: .
@@ -20,3 +26,5 @@ services:
       SPRING_PROFILES_ACTIVE: dev
     depends_on:
       - keycloak
+    networks:
+      - security
